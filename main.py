@@ -46,7 +46,6 @@ def text(message):
         bot.send_message(message.chat.id, mongodb.get_all_users(message))
     elif message.text == 'Погода':
         observation = mgr.weather_at_place('Odessa, Ukraine')
-        place = message.text
         w = observation.weather
         temp = w.temperature('celsius')["temp"]
         pogoda = w.detailed_status
@@ -99,32 +98,30 @@ def callback_inline(call):
                 markup.add(item5)
                 bot.send_message(call.message.chat.id, 'Выберите, что вас интересует:', reply_markup=markup)
 
-            elif call.data == 'eth':
+            elif call.data == 'crypto_list':
+                bot.send_message(call.message.chat.id, client.get_all_names())
 
+            elif call.data == 'eth':
                 current_price = client.get_last_price(pair=ETH)
                 text = "*Курс валюты:*\n\n*{}* = {}$".format(ETH, current_price)
                 bot.send_message(call.message.chat.id, text)
 
             elif call.data == 'btc':
-
                 current_price = client.get_last_price(pair=BTC)
                 text = "*Курс валюты:*\n\n*{}* = {}$".format(BTC, current_price)
                 bot.send_message(call.message.chat.id, text)
 
             elif call.data == 'xrp':
-
                 current_price = client.get_last_price(pair=XRP)
                 text = "*Курс валюты:*\n\n*{}* = {}$".format(XRP, current_price)
                 bot.send_message(call.message.chat.id, text)
 
             elif call.data == 'ada':
-
                 current_price = client.get_last_price(pair=ADA)
                 text = "*Курс валюты:*\n\n*{}* = {}$".format(ADA, current_price)
                 bot.send_message(call.message.chat.id, text)
 
             elif call.data == 'doge':
-
                 current_price = client.get_last_price(pair=DOGE)
                 text = "*Курс валюты:*\n\n*{}* = {}$".format(DOGE, current_price)
                 bot.send_message(call.message.chat.id, text)
