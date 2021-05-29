@@ -1,6 +1,6 @@
 from pymongo import MongoClient
 from datetime import datetime
-from private_info import MONGODB_LINK, admin_chat_id
+from additional.private_data import MONGODB_LINK, admin_chat_id
 
 MONGO_DB = "baza"
 mdb = MongoClient(MONGODB_LINK)[MONGO_DB]

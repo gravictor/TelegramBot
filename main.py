@@ -4,19 +4,12 @@ import telebot
 from pyowm import OWM
 from telebot import types
 from bittrex import BittrexClient
-from private_info import token
+from additional.private_data import token
+from additional.data import *
 
-bot = telebot.TeleBot(token)
 owm = OWM('4136767328e7320b9b54e9f338b8cd38')
 mgr = owm.weather_manager()
-
-ETH = "USD-ETH"
-BTC = "USD-BTC"
-XRP = "USD-XRP"
-DOGE = "USD-DOGE"
-ADA = "USD-ADA"
-LTC = "USD-LTC"
-ATOM = "USD-ATOM"
+bot = telebot.TeleBot(token)
 
 
 @bot.message_handler(commands=['start'])
@@ -24,8 +17,8 @@ def start(message):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
     button1 = types.KeyboardButton('Погода')
     button2 = types.KeyboardButton('Криптовалюта ₿')
-    button3 = types.KeyboardButton('')
-    button4 = types.KeyboardButton('Админка')
+    button3 = types.KeyboardButton('Гороскоп ♑')
+    button4 = types.KeyboardButton('Админка 👑')
     markup.add(button2)
     markup.add(button3)
     markup.add(button1, button4)
@@ -36,17 +29,56 @@ def start(message):
     mongodb.check_and_add_user(message)
 
 
+@bot.message_handler(commands=['help'])
+def help(message):
+    bot.send_message(message.chat.id, "Выбирай что тебя интересует:\nКриптовалюта\nПогода в Одессе"
+                                      "\nНу а если ты админ, то можешь просмотреть список зарегестрированных"
+                                      " пользователей"
+                                      "\n\nНе получается? Попробуй заново /start")
+
+
 @bot.message_handler(content_types=['text'])
 def text(message):
     if message.text == 'Криптовалюта ₿':
         markup = types.InlineKeyboardMarkup(row_width=3)
         item1 = types.InlineKeyboardButton('Курс топовых криптомонет', callback_data='course')
-        item2 = types.InlineKeyboardButton('Список всех монет на Bittrex', callback_data='crypto_list')
+        item2 = types.InlineKeyboardButton('Список торгуемых монет на Bittrex', callback_data='crypto_list')
         markup.add(item1)
         markup.add(item2)
         bot.send_message(message.chat.id, 'Выберите, что вас интересует:', reply_markup=markup)
-    elif message.text == 'Админка':
+
+    elif message.text == 'Гороскоп ♑':
+        print('TYT')
+        markup = types.InlineKeyboardMarkup(row_width=8)
+        item1 = types.InlineKeyboardButton('Овен (21 марта – 20 апреля)', callback_data='ove')
+        item2 = types.InlineKeyboardButton('Телец (21 апреля – 21 мая)', callback_data='tel')
+        item3 = types.InlineKeyboardButton('Близнецы (22 мая – 21 июня)', callback_data='bli')
+        item4 = types.InlineKeyboardButton('Рак (22 июня – 22 июля)', callback_data='rak')
+        item5 = types.InlineKeyboardButton('Лев (23 июля – 21 августа)', callback_data='lev')
+        item6 = types.InlineKeyboardButton('Дева (22 августа – 23 сентября)', callback_data='dev')
+        item7 = types.InlineKeyboardButton('Весы (24 сентября – 23 октября)', callback_data='ves')
+        item8 = types.InlineKeyboardButton('Скорпион (24 октября – 23 ноября)', callback_data='sco')
+        item9 = types.InlineKeyboardButton('Стрелец (24 ноября – 22 декабря)', callback_data='str')
+        item10 = types.InlineKeyboardButton('Козерог (23 декабря – 20 января)', callback_data='koz')
+        item11 = types.InlineKeyboardButton('Водолей (21 января – 19 февраля)', callback_data='vod')
+        item12 = types.InlineKeyboardButton('Рыбы (20 февраля – 20 марта))', callback_data='rib')
+        markup.add(item1)
+        markup.add(item2)
+        markup.add(item3)
+        markup.add(item4)
+        markup.add(item5)
+        markup.add(item6)
+        markup.add(item7)
+        markup.add(item8)
+        markup.add(item9)
+        markup.add(item10)
+        markup.add(item11)
+        markup.add(item12)
+        bot.send_message(message.chat.id, 'Выберите ваш зоодиак:', reply_markup=markup)
+
+    elif message.text == 'Админка 👑':
         bot.send_message(message.chat.id, mongodb.get_all_users(message))
+
     elif message.text == 'Погода':
         observation = mgr.weather_at_place('Odessa, Ukraine')
         w = observation.weather
@@ -62,24 +94,6 @@ def text(message):
             bot.send_message(message.chat.id, "Довольно тепло, куртка не нужна")
         else:
             bot.send_message(message.chat.id, "На улице жара - самое время пойти на море)")
-
-
-@bot.message_handler(commands=['help'])
-def helpmess(message):
-    print('tyt')
-    bot.send_message(message.chat.id, "В данный момент бот находится в разработке. Доступные команды: "
-                                      "\nЧтобы начать с самого начала - нажми /start"
-                                      "\nЧтобы узнать текущую погоду - нажми /weather"
-                                      "\nЧтобы узнать курс Bitcoin - нажми /crypto")
-
-
-@bot.message_handler(commands=['crypto'])
-def send_welcome(message):
-    client = BittrexClient()
-    current_price = client.get_last_price(pair=ETH)
-    text = "*Курс валюты:*\n\n*{}* = {}$".format(ETH, current_price)
-    bot.send_message(message.chat.id, text)
-    bot.send_message(message.chat.id, client.get_all_names())
 
 
 @bot.callback_query_handler(func=lambda call: True)
@@ -145,11 +159,6 @@ def callback_inline(call):
 
     except Exception as e:
         print(repr(e))
-
-
-@bot.message_handler(content_types=['text'])
-def send_weather(message):
-    bot.send_message(message.chat.id, "Бот тебя не понимает, нажми /help)")
 
 
 bot.polling(none_stop=True)

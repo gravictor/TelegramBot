@@ -1,5 +1,4 @@
 from logging import getLogger
-
 import requests
 
 
