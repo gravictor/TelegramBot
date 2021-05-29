@@ -6,12 +6,12 @@ logger = getLogger(__name__)
 
 
 class BittrexError(Exception):
-    """ Неизвестная ошибка при запросе API Bittrex
+    """ Невідома помилка при запиті API Bittrex
     """
 
 
 class BittrexRequestError(BittrexError):
-    """ Ошибка при некорректном запросе
+    """ Помилка при некоректному запиті
     """
 
 

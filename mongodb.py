@@ -24,10 +24,9 @@ def get_all_users(message):
     if message.from_user.id == admin_chat_id:
         d = mdb.users.find({}, {"first_name": 1, "id": 1, "last_name": 1, "nickname": 1})
         c = "Доступны пользователи: "
-        count = 0
         for i in d:
             a = str(i["first_name"] + " " + i["last_name"] + " @"+i["nickname"])
             c += "\n" + a
         return c
     else:
-        return "Ты не хитри, ты не админ, самозванец!"
+        return "Ти не хитруй, ти не адмін, самозванець!"
